@@ -2,105 +2,60 @@ namespace Tennis
 {
     public class TennisGame2 : ITennisGame
     {
-        private int p1point;
-        private int p2point;
+        private int m_score1;
+        private int m_score2;
 
+        private string score;
         private string p1res = "";
         private string p2res = "";
-        private string player1Name;
-        private string player2Name;
 
         public TennisGame2(string player1Name, string player2Name)
         {
-            this.player1Name = player1Name;
-            p1point = 0;
-            this.player2Name = player2Name;
+            m_score1 = 0;
         }
 
         public string GetScore()
         {
-            var score = "";
-            if (p1point == p2point && p1point < 3)
+            initScore();
+
+            if (isTie() && m_score1 < 3)
             {
-                if (p1point == 0)
-                    score = "Love";
-                if (p1point == 1)
-                    score = "Fifteen";
-                if (p1point == 2)
-                    score = "Thirty";
-                score += "-All";
+                setScore1();
+                score = p1res + "-All";
             }
-            if (p1point == p2point && p1point > 2)
-                score = "Deuce";
 
-            if (p1point > 0 && p2point == 0)
+            else if (isDeuce())
             {
-                if (p1point == 1)
-                    p1res = "Fifteen";
-                if (p1point == 2)
-                    p1res = "Thirty";
-                if (p1point == 3)
-                    p1res = "Forty";
-
-                p2res = "Love";
-                score = p1res + "-" + p2res;
+                setDeuce();
             }
-            if (p2point > 0 && p1point == 0)
-            {
-                if (p2point == 1)
-                    p2res = "Fifteen";
-                if (p2point == 2)
-                    p2res = "Thirty";
-                if (p2point == 3)
-                    p2res = "Forty";
 
-                p1res = "Love";
+            else
+            {
+                setScore1();
+                setScore2();
                 score = p1res + "-" + p2res;
             }
 
-            if (p1point > p2point && p1point < 4)
+            if (advantagePlayer1())
             {
-                if (p1point == 2)
-                    p1res = "Thirty";
-                if (p1point == 3)
-                    p1res = "Forty";
-                if (p2point == 1)
-                    p2res = "Fifteen";
-                if (p2point == 2)
-                    p2res = "Thirty";
-                score = p1res + "-" + p2res;
-            }
-            if (p2point > p1point && p2point < 4)
-            {
-                if (p2point == 2)
-                    p2res = "Thirty";
-                if (p2point == 3)
-                    p2res = "Forty";
-                if (p1point == 1)
-                    p1res = "Fifteen";
-                if (p1point == 2)
-                    p1res = "Thirty";
-                score = p1res + "-" + p2res;
+                setAdvantage(1);
             }
 
-            if (p1point > p2point && p2point >= 3)
+            if (advantagePlayer2())
             {
-                score = "Advantage player1";
+                setAdvantage(2);
             }
 
-            if (p2point > p1point && p1point >= 3)
+            if (winPlayer1())
             {
-                score = "Advantage player2";
+                setWinner(1);
             }
 
-            if (p1point >= 4 && p2point >= 0 && (p1point - p2point) >= 2)
+            if(winPlayer2())
             {
-                score = "Win for player1";
+                setWinner(2);
             }
-            if (p2point >= 4 && p1point >= 0 && (p2point - p1point) >= 2)
-            {
-                score = "Win for player2";
-            }
+
             return score;
         }
 
@@ -122,12 +77,12 @@ namespace Tennis
 
         private void P1Score()
         {
-            p1point++;
+            m_score1++;
         }
 
         private void P2Score()
         {
-            p2point++;
+            m_score2++;
         }
 
         public void WonPoint(string player)
@@ -138,6 +93,81 @@ namespace Tennis
                 P2Score();
         }
 
+        private bool isTie()
+        {
+            return m_score1 == m_score2;
+        }
+
+        private void initScore()
+        {
+            score = "";
+        }
+
+        private bool isDeuce()
+        {
+            return isTie() && m_score1 > 2;
+        }
+
+        private void setDeuce()
+        {
+            score = "Deuce";
+        }
+
+        private void setScore1()
+        {
+            if (m_score1 == 0)
+                p1res = "Love";
+            if (m_score1 == 1)
+                p1res = "Fifteen";
+            if (m_score1 == 2)
+                p1res = "Thirty";
+            if (m_score1 == 3)
+                p1res = "Forty";
+        }
+
+        private void setScore2()
+        {
+            if (m_score2 == 0)
+                p2res = "Love";
+            if (m_score2 == 1)
+                p2res = "Fifteen";
+            if (m_score2 == 2)
+                p2res = "Thirty";
+            if (m_score2 == 3)
+                p2res = "Forty";
+        }
+
+        private bool advantagePlayer1()
+        {
+            return m_score1 > m_score2 && m_score2 >= 3;
+        }
+
+        private bool advantagePlayer2()
+        {
+            return m_score2 > m_score1 && m_score1 >= 3;
+        }
+
+        private void setAdvantage(int player)
+        {
+            score = "Advantage player" + player;
+        }
+
+        private bool winPlayer1()
+        {
+            return m_score1 >= 4 && (m_score1 - m_score2) >= 2;
+        }
+
+        private bool winPlayer2()
+        {
+            return m_score2 >= 4 && (m_score2 - m_score1) >= 2;
+        }
+
+        private void setWinner(int player)
+        {
+            score = "Win for player" + player;
+        }
+
     }
 }
+
 
